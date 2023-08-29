@@ -1,10 +1,13 @@
 all: patch
 
+# Path to `svd`/`svdtools`
+SVDTOOLS ?= svdtools
+
 YAMLS := $(wildcard *.yaml)
 PATCHED_SVDS := $(patsubst %.yaml, %.svd.patched, $(YAMLS))
 
 %.svd.patched: %.yaml %.svd
-	svd patch $<
+	$(SVDTOOLS) patch $<
 
 patch: $(PATCHED_SVDS)
 
