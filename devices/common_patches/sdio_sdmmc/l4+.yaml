@@ -1,0 +1,683 @@
+
+SDMMC1:
+  POWER:
+    _add:
+      VSWITCH:
+        description: Voltage switch sequence start.
+          Start the timing critical section of the voltage switch sequence
+        bitOffset: 2
+        bitWidth: 1
+
+      VSWITCHEN:
+        description: "Voltage switch procedure enable.
+          This bit can only be written by firmware when CPSM is
+          disabled (CPSMEN = 0). This bit is used to stop the
+          SDMMC_CK after the voltage switch command response"
+        bitOffset: 3
+        bitWidth: 1
+
+      DIRPOL:
+        description: "Data and command direction signals polarity selection.
+          This bit can only be written when the SDMMC is in the power-off state
+          (PWRCTRL = 00)"
+        bitOffset: 4
+        bitWidth: 1
+
+  CLKCR:
+
+    _delete:
+      - BYPASS
+      - CLKEN
+
+    _add:
+      SELCLKRX:
+        description: "Receive clock selection. These bits can
+              only be written when the CPSM and DPSM are not active
+              (CPSMACT = 0 and DPSMACT = 0)"
+        bitOffset: 20
+        bitWidth: 2
+        access: read-write
+      BUSSPEED:
+        description: "Bus speed mode selection between DS, HS,
+              SDR12, SDR25 and SDR50, DDR50, SDR104. This bit can
+              only be written when the CPSM and DPSM are not active
+              (CPSMACT = 0 and DPSMACT = 0)"
+        bitOffset: 19
+        bitWidth: 1
+        access: read-write
+      DDR:
+        description: "Data rate signaling selection
+              This bit can only be written when the CPSM and DPSM
+              are not active (CPSMACT = 0 and DPSMACT = 0)
+              DDR rate shall only be selected with 4-bit or 8-bit
+              wide bus mode (WIDBUS > 00).
+              DDR = 1 has no effect when WIDBUS = 00 (1-bit wide bus).
+              DDR rate shall only be selected with clock division > 1.
+              (CLKDIV > 0)"
+        bitOffset: 18
+        bitWidth: 1
+        access: read-write
+
+    _modify:
+      HWFC_EN:
+        bitOffset: 17
+      NEGEDGE:
+        bitOffset: 16
+      WIDBUS:
+        bitOffset: 14
+      PWRSAV:
+        bitOffset: 12
+      CLKDIV:
+        bitWidth: 9
+        description: "Clock divide factor This bit can only be
+              written when the CPSM and DPSM are not active
+              (CPSMACT = 0 and DPSMACT = 0). This field defines the
+              divide factor between the input clock (SDMMCCLK) and
+              the output clock (SDMMC_CK): SDMMC_CK frequency =
+              SDMMCCLK / [2 * CLKDIV]. 0xx: etc.. xxx:
+              etc.."
+
+
+  CMD:
+
+    _delete:
+      - CE_ATACMD
+      - nIEN
+      - ENCMDcompl
+      - SDIOSuspend
+
+    _modify:
+      CPSMEN:
+        bitOffset: 12
+      WAITPEND:
+        bitOffset: 11
+      WAITINT:
+        bitOffset: 10
+      WAITRESP:
+        bitOffset: 8
+
+    _add:
+      CMDTRANS:
+        description: "The CPSM treats the command as a data
+              transfer command, stops the interrupt period, and
+              signals DataEnable to the DPSM This bit can only be
+              written by firmware when CPSM is disabled (CPSMEN =
+              0). If this bit is set, the CPSM issues an end of
+              interrupt period and issues DataEnable signal to the
+              DPSM when the command is sent"
+        bitOffset: 6
+        bitWidth: 1
+        access: read-write
+
+      CMDSTOP:
+        description: "The CPSM treats the command as a Stop
+              Transmission command and signals Abort to the DPSM.
+              This bit can only be written by firmware when CPSM is
+              disabled (CPSMEN = 0). If this bit is set, the CPSM
+              issues the Abort signal to the DPSM when the command
+              is sent"
+        bitOffset: 7
+        bitWidth: 1
+        access: read-write
+
+      DTHOLD:
+        description: "Hold new data block transmission and
+              reception in the DPSM. If this bit is set, the DPSM
+              will not move from the Wait_S state to the Send state
+              or from the Wait_R state to the Receive
+              state"
+        bitOffset: 13
+        bitWidth: 1
+        access: read-write
+
+      BOOTMODE:
+        description: Select the boot mode procedure to be used
+        bitOffset: 14
+        bitWidth: 1
+        access: read-write
+
+      BOOTEN:
+        description: Enable boot mode procedure
+        bitOffset: 15
+        bitWidth: 1
+        access: read-write
+
+      CMDSUSPEND:
+        description: "The CPSM treats the command as a Suspend
+              or Resume command and signals interrupt period
+              start/end. This bit can only be written by firmware
+              when CPSM is disabled (CPSMEN = 0). CMDSUSPEND = 1
+              and CMDTRANS = 0 Suspend command, start interrupt
+              period when response bit BS=0. CMDSUSPEND = 1 and
+              CMDTRANS = 1 Resume command with data, end interrupt
+              period when response bit DF=1."
+        bitOffset: 16
+        bitWidth: 1
+        access: read-write
+
+  DCTRL:
+
+    _modify:
+      DTMODE:
+        bitWidth: 2
+        description: "Data transfer mode selection. This bit
+              can only be written by firmware when DPSM is inactive
+              (DPSMACT = 0)."
+
+    _add:
+      BOOTACKEN:
+        description: "Enable the reception of the boot
+              acknowledgment. This bit can only be written by
+              firmware when DPSM is inactive (DPSMACT =
+              0)."
+        bitOffset: 12
+        bitWidth: 1
+        access: read-write
+      FIFORST:
+        description: "FIFO reset, will flush any remaining
+              data. This bit can only be written by firmware when
+              IDMAEN= 0 and DPSM is active (DPSMACT = 1). This bit
+              will only take effect when a transfer error or
+              transfer hold occurs."
+        bitOffset: 13
+        bitWidth: 1
+        access: read-write
+
+  STA:
+    _delete:
+      - CMDACT
+      - TXACT
+      - RXACT
+      - TXDAVL
+      - RXDAVL
+      - CEATAEND
+
+    _add:
+      DHOLD:
+        description: Data transfer Hold
+        bitOffset: 9
+        bitWidth: 1
+
+      DABORT:
+        description: Data transfer aborted by CMD12
+        bitOffset: 11
+        bitWidth: 1
+
+      DPSMACT:
+        description: Data path state machine active, i.e. not in Idle state.
+        bitOffset: 12
+        bitWidth: 1
+
+      CPSMACT:
+        description: Command path state machine active, i.e. not in Idle state
+        bitOffset: 13
+        bitWidth: 1
+
+      BUSYD0:
+        description: "Inverted value of SDMMC_D0 line (Busy),
+              sampled at the end of a CMD response and a second
+              time 2 SDMMC_CK cycles after the CMD response. This
+              bit is reset to not busy when the SDMMCD0 line
+              changes from busy to not busy. This bit does not
+              signal busy due to data transfer"
+        bitOffset: 20
+        bitWidth: 1
+
+      BUSYD0END:
+        description: "end of SDMMC_D0 Busy following a CMD
+              response detected. This indicates only end of busy
+              following a CMD response. This bit does not signal
+              busy due to data transfer."
+        bitOffset: 21
+        bitWidth: 1
+
+      ACKFAIL:
+        description: Boot acknowledgment received (boot acknowledgment check fail)
+        bitOffset: 23
+        bitWidth: 1
+
+      ACKTIMEOUT:
+        description: Boot acknowledgment timeout
+        bitOffset: 24
+        bitWidth: 1
+
+      VSWEND:
+        description: Voltage switch critical timing section completion
+        bitOffset: 25
+        bitWidth: 1
+
+      CKSTOP:
+        description: SDMMC_CK stopped in Voltage switch procedure
+        bitOffset: 26
+        bitWidth: 1
+
+      IDMATE:
+        description: IDMA transfer error
+        bitOffset: 27
+        bitWidth: 1
+
+      IDMABTC:
+        description: IDMA buffer transfer complete
+        bitOffset: 28
+        bitWidth: 1
+
+  ICR:
+    _delete:
+      - CEATAENDC
+      - STBITERRC
+
+    _add:
+      DHOLDC:
+        description: DHOLD flag clear bit
+        bitOffset: 9
+        bitWidth: 1
+      DABORTC:
+        description: DABORT flag clear bit
+        bitOffset: 11
+        bitWidth: 1
+      BUSYD0ENDC:
+        description: BUSYD0END flag clear bit
+        bitOffset: 21
+        bitWidth: 1
+      ACKFAILC:
+        description: ACKFAIL flag clear bit
+        bitOffset: 23
+        bitWidth: 1
+      ACKTIMEOUTC:
+        description: ACKTIMEOUT flag clear bit
+        bitOffset: 24
+        bitWidth: 1
+      VSWENDC:
+        description: VSWEND flag clear bit
+        bitOffset: 25
+        bitWidth: 1
+      CKSTOPC:
+        description: CKSTOP flag clear bit
+        bitOffset: 26
+        bitWidth: 1
+      IDMATEC:
+        description: IDMATE flag clear bit
+        bitOffset: 27
+        bitWidth: 1
+      IDMABTCC:
+        description: IDMABTC flag clear bit
+        bitOffset: 28
+        bitWidth: 1
+
+  MASK:
+    _delete:
+      - CEATAENDIE
+      - STBITERRIE
+      - CMDACTIE
+      - TXACTIE
+      - RXACTIE
+      - TXFIFOFIE
+      - RXFIFOEIE
+      - TXDAVLIE
+      - RXDAVLIE
+
+
+    _add:
+      DHOLDIE:
+        description: Data hold interrupt enable
+        bitOffset: 9
+        bitWidth: 1
+      DABORTIE:
+        description: Data transfer aborted interrupt enable
+        bitOffset: 11
+        bitWidth: 1
+      BUSYD0ENDIE:
+        description: BUSYD0END interrupt enable
+        bitOffset: 21
+        bitWidth: 1
+      ACKFAILIE:
+        description: Acknowledgment fail interrupt enable
+        bitOffset: 23
+        bitWidth: 1
+      ACKTIMEOUTIE:
+        description: Acknowledgment timeout interrupt enable
+        bitOffset: 24
+        bitWidth: 1
+      VSWENDIE:
+        description: Voltage switch critical timing section completion interrupt enable
+        bitOffset: 25
+        bitWidth: 1
+      CKSTOPIE:
+        description: Voltage switch clock stopped interrupt enable
+        bitOffset: 26
+        bitWidth: 1
+      IDMABTCIE:
+        description: IDMA buffer transfer complete interrupt enable
+        bitOffset: 28
+        bitWidth: 1
+
+  _delete:
+    - FIFOCNT
+    - FIFO
+
+  _add:
+
+    ACKTIMER:
+      description: "Contains the acknowledgment timeout period,
+        in SDMMC_CK bus clock periods. A counter loads the value from the
+        SDMMC_ACKTIMER register, and starts decrementing when the
+        data path state machine (DPSM) enters the Wait_Ack state.
+        If the timer reaches 0 while the DPSM is in this states,
+        the acknowledgment timeout status flag is set"
+      addressOffset: 0x40
+      size: 0x20
+      resetValue: 0x00000000
+      access: read-write
+      fields:
+        ACKTIME:
+          description: "Boot acknowledgement timeout period.
+            Can only be written by firmware when CPSM is disabled (CPSMEN = 0)"
+          bitOffset: 0
+          bitWidth: 25
+
+    IDMACTRLR:
+      description: "Integrated DMA control register.
+        Can only be written by firmware when DPSM is inactive (DPSMACT = 0)"
+      addressOffset: 0x50
+      size: 0x20
+      resetValue: 0x00000000
+      access: read-write
+      fields:
+        IDMAEN:
+          description: IDMA enable
+          bitOffset: 0
+          bitWidth: 1
+        IDMABMODE:
+          description: Buffer mode selection
+          bitOffset: 1
+          bitWidth: 1
+        IDMABACT:
+          description: Double buffer mode active buffer indication
+          bitOffset: 2
+          bitWidth: 1
+
+    IDMABSIZER:
+      description: "The SDMMC_IDMABSIZER register contains the
+          buffer size when in double buffer configuration"
+      addressOffset: 0x54
+      size: 0x20
+      resetValue: 0x00000000
+      access: read-write
+      fields:
+        IDMABNDT:
+          description: "Number of transfers per buffer. This
+              8-bit value shall be multiplied by 8 to get the size
+              of the buffer in 32-bit words and by 32 to get the
+              size of the buffer in bytes. Example: IDMABNDT =
+              0x01: buffer size = 8 words = 32 bytes. These bits
+              can only be written by firmware when DPSM is inactive
+              (DPSMACT = 0)."
+          bitOffset: 5
+          bitWidth: 8
+
+    IDMABASE0R:
+      description: "The SDMMC_IDMABASE0R register contains the
+          memory buffer base address in single buffer configuration
+          and the buffer 0 base address in double buffer
+          configuration"
+      addressOffset: 0x58
+      size: 0x20
+      access: read-write
+      resetValue: 0x00000000
+      fields:
+        IDMABASE0:
+          description: "Buffer 0 memory base address, must be word aligned
+              (bit [1:0] are always 0 and read only).
+              This register can be written by firmware when
+              DPSM is inactive (DPSMACT = 0), and can
+              dynamically be written by firmware when DPSM active
+              (DPSMACT = 1) and memory buffer 0 is inactive
+              (IDMABACT = 1)."
+          bitOffset: 0
+          bitWidth: 32
+
+    IDMABASE1R:
+      description: "The SDMMC_IDMABASE0R register contains the
+      double buffer configuration second buffer memory base address"
+      addressOffset: 0x5c
+      size: 0x20
+      access: read-write
+      resetValue: 0x00000000
+      fields:
+        IDMABASE1:
+          description: "Buffer 1 memory base address, must be word aligned
+              (bit [1:0] are always 0 and read only).
+              This register can be written by firmware when
+              DPSM is inactive (DPSMACT = 0), and can
+              dynamically be written by firmware when DPSM active
+              (DPSMACT = 1) and memory buffer 0 is inactive
+              (IDMABACT = 1)."
+          bitOffset: 0
+          bitWidth: 32
+
+
+    FIFOR0:
+      description: "FIFO word 0: ccan only be read/written as 32-bit word.
+        there are 16 sequenctial register addresses FIFO0..FIFO15"
+      addressOffset: 0x80
+      size: 0x20
+      resetValue: 0x00000000
+      access: read-write
+      fields:
+        FIFODATA:
+          description: "Receive and transmit FIFO data This
+              register can only be read or written by firmware when
+              the DPSM is active (DPSMACT=1)"
+          bitOffset: 0
+          bitWidth: 32
+    FIFOR1:
+      description: "FIFO word 1: ccan only be read/written as 32-bit word.
+        there are 16 sequenctial register addresses FIFO0..FIFO15"
+      addressOffset: 0x84
+      size: 0x20
+      resetValue: 0x00000000
+      access: read-write
+      fields:
+        FIFODATA:
+          description: "Receive and transmit FIFO data This
+              register can only be read or written by firmware when
+              the DPSM is active (DPSMACT=1)"
+          bitOffset: 0
+          bitWidth: 32
+    FIFOR2:
+      description: "FIFO word 2: ccan only be read/written as 32-bit word.
+        there are 16 sequenctial register addresses FIFO0..FIFO15"
+      addressOffset: 0x88
+      size: 0x20
+      resetValue: 0x00000000
+      access: read-write
+      fields:
+        FIFODATA:
+          description: "Receive and transmit FIFO data This
+              register can only be read or written by firmware when
+              the DPSM is active (DPSMACT=1)"
+          bitOffset: 0
+          bitWidth: 32
+    FIFOR3:
+      description: "FIFO word 3: ccan only be read/written as 32-bit word.
+        there are 16 sequenctial register addresses FIFO0..FIFO15"
+      addressOffset: 0x8c
+      size: 0x20
+      resetValue: 0x00000000
+      access: read-write
+      fields:
+        FIFODATA:
+          description: "Receive and transmit FIFO data This
+              register can only be read or written by firmware when
+              the DPSM is active (DPSMACT=1)"
+          bitOffset: 0
+          bitWidth: 32
+    FIFOR4:
+      description: "FIFO word 4: ccan only be read/written as 32-bit word.
+        there are 16 sequenctial register addresses FIFO0..FIFO15"
+      addressOffset: 0x90
+      size: 0x20
+      resetValue: 0x00000000
+      access: read-write
+      fields:
+        FIFODATA:
+          description: "Receive and transmit FIFO data This
+              register can only be read or written by firmware when
+              the DPSM is active (DPSMACT=1)"
+          bitOffset: 0
+          bitWidth: 32
+    FIFOR5:
+      description: "FIFO word 5: ccan only be read/written as 32-bit word.
+        there are 16 sequenctial register addresses FIFO0..FIFO15"
+      addressOffset: 0x94
+      size: 0x20
+      resetValue: 0x00000000
+      access: read-write
+      fields:
+        FIFODATA:
+          description: "Receive and transmit FIFO data This
+              register can only be read or written by firmware when
+              the DPSM is active (DPSMACT=1)"
+          bitOffset: 0
+          bitWidth: 32
+    FIFOR6:
+      description: "FIFO word 6: ccan only be read/written as 32-bit word.
+        there are 16 sequenctial register addresses FIFO0..FIFO15"
+      addressOffset: 0x98
+      size: 0x20
+      resetValue: 0x00000000
+      access: read-write
+      fields:
+        FIFODATA:
+          description: "Receive and transmit FIFO data This
+              register can only be read or written by firmware when
+              the DPSM is active (DPSMACT=1)"
+          bitOffset: 0
+          bitWidth: 32
+    FIFOR7:
+      description: "FIFO word 7: ccan only be read/written as 32-bit word.
+        there are 16 sequenctial register addresses FIFO0..FIFO15"
+      addressOffset: 0x9c
+      size: 0x20
+      resetValue: 0x00000000
+      access: read-write
+      fields:
+        FIFODATA:
+          description: "Receive and transmit FIFO data This
+              register can only be read or written by firmware when
+              the DPSM is active (DPSMACT=1)"
+          bitOffset: 0
+          bitWidth: 32
+    FIFOR8:
+      description: "FIFO word 8: ccan only be read/written as 32-bit word.
+        there are 16 sequenctial register addresses FIFO0..FIFO15"
+      addressOffset: 0xa0
+      size: 0x20
+      resetValue: 0x00000000
+      access: read-write
+      fields:
+        FIFODATA:
+          description: "Receive and transmit FIFO data This
+              register can only be read or written by firmware when
+              the DPSM is active (DPSMACT=1)"
+          bitOffset: 0
+          bitWidth: 32
+    FIFOR9:
+      description: "FIFO word 9: ccan only be read/written as 32-bit word.
+        there are 16 sequenctial register addresses FIFO0..FIFO15"
+      addressOffset: 0xa4
+      size: 0x20
+      resetValue: 0x00000000
+      access: read-write
+      fields:
+        FIFODATA:
+          description: "Receive and transmit FIFO data This
+              register can only be read or written by firmware when
+              the DPSM is active (DPSMACT=1)"
+          bitOffset: 0
+          bitWidth: 32
+    FIFOR10:
+      description: "FIFO word 10: ccan only be read/written as 32-bit word.
+        there are 16 sequenctial register addresses FIFO0..FIFO15"
+      addressOffset: 0xa8
+      size: 0x20
+      resetValue: 0x00000000
+      access: read-write
+      fields:
+        FIFODATA:
+          description: "Receive and transmit FIFO data This
+              register can only be read or written by firmware when
+              the DPSM is active (DPSMACT=1)"
+          bitOffset: 0
+          bitWidth: 32
+    FIFOR11:
+      description: "FIFO word 11: ccan only be read/written as 32-bit word.
+        there are 16 sequenctial register addresses FIFO0..FIFO15"
+      addressOffset: 0xac
+      size: 0x20
+      resetValue: 0x00000000
+      access: read-write
+      fields:
+        FIFODATA:
+          description: "Receive and transmit FIFO data This
+              register can only be read or written by firmware when
+              the DPSM is active (DPSMACT=1)"
+          bitOffset: 0
+          bitWidth: 32
+    FIFOR12:
+      description: "FIFO word 12: ccan only be read/written as 32-bit word.
+        there are 16 sequenctial register addresses FIFO0..FIFO15"
+      addressOffset: 0xb0
+      size: 0x20
+      resetValue: 0x00000000
+      access: read-write
+      fields:
+        FIFODATA:
+          description: "Receive and transmit FIFO data This
+              register can only be read or written by firmware when
+              the DPSM is active (DPSMACT=1)"
+          bitOffset: 0
+          bitWidth: 32
+    FIFOR13:
+      description: "FIFO word 13: ccan only be read/written as 32-bit word.
+        there are 16 sequenctial register addresses FIFO0..FIFO15"
+      addressOffset: 0xb4
+      size: 0x20
+      resetValue: 0x00000000
+      access: read-write
+      fields:
+        FIFODATA:
+          description: "Receive and transmit FIFO data This
+              register can only be read or written by firmware when
+              the DPSM is active (DPSMACT=1)"
+          bitOffset: 0
+          bitWidth: 32
+    FIFOR14:
+      description: "FIFO word 14: ccan only be read/written as 32-bit word.
+        there are 16 sequenctial register addresses FIFO0..FIFO15"
+      addressOffset: 0xb8
+      size: 0x20
+      resetValue: 0x00000000
+      access: read-write
+      fields:
+        FIFODATA:
+          description: "Receive and transmit FIFO data This
+              register can only be read or written by firmware when
+              the DPSM is active (DPSMACT=1)"
+          bitOffset: 0
+          bitWidth: 32
+    FIFOR15:
+      description: "FIFO word 15: ccan only be read/written as 32-bit word.
+        there are 16 sequenctial register addresses FIFO0..FIFO15"
+      addressOffset: 0xbc
+      size: 0x20
+      resetValue: 0x00000000
+      access: read-write
+      fields:
+        FIFODATA:
+          description: "Receive and transmit FIFO data This
+              register can only be read or written by firmware when
+              the DPSM is active (DPSMACT=1)"
+          bitOffset: 0
+          bitWidth: 32
+
